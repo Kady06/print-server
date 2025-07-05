@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nastavení tiskárny a testovací tisk</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto Mono', monospace;
+      background: linear-gradient(135deg, #ef7e00, #fff500);
+      color: #3a2300;
+      margin: 0;
+      padding: 20px 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    main {
+      background: #3a2300;
+      padding: 2em;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(255, 245, 0, 0.4);
+      max-width: 50%;
+      width: 100%;
+      color: #fff500;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    h1,
+    h2 {
+      text-align: center;
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: 1.1px;
+      text-shadow: 0 0 12px #fff500cc;
+    }
+
+    p.status {
+      background: #5e3b00cc;
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 1.15rem;
+      margin: 0 auto 20px;
+      max-width: 100%;
+      text-align: center;
+      color: #fff500;
+      box-shadow: inset 0 0 10px #fff500aa;
+      user-select: none;
+      font-weight: 600;
+    }
+
+    p.status.warning {
+      color: #ef7e00;
+      background: #fff0ccdd;
+      box-shadow: inset 0 0 8px #ef7e0055;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      width: 100%;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: #fff500;
+      user-select: none;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: none;
+      font-size: 1.1rem;
+      background: #5e3b0011;
+      color: #fff500;
+      box-shadow: inset 0 0 10px #ef7e00aa;
+      transition: background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+      font-weight: 600;
+      caret-color: #fff500;
+      letter-spacing: 0.03em;
+    }
+
+    input::placeholder {
+      color: #fff500cc;
+      font-style: italic;
+    }
+
+    input:focus {
+      outline: none;
+      background: #7f5400cc;
+      box-shadow: 0 0 14px #fff500ee;
+      color: #fff;
+    }
+
+    button {
+      background: #ef7e00;
+      border: none;
+      padding: 16px 0;
+      font-weight: 800;
+      font-size: 1.2rem;
+      border-radius: 14px;
+      cursor: pointer;
+      color: #3a2300;
+      box-shadow: 0 10px 20px #ffb33bcc;
+      transition: background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+      letter-spacing: 0.05em;
+      user-select: none;
+    }
+
+    button:hover,
+    button:focus {
+      background: #fff500;
+      color: #3a2300;
+      box-shadow: 0 14px 30px #fff500ee;
+      outline: none;
+    }
+
+    #result,
+    #authMessage {
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.15rem;
+      padding: 14px 18px;
+      border-radius: 14px;
+      min-height: 44px;
+      user-select: none;
+      transition: all 0.3s ease;
+      letter-spacing: 0.03em;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    #result.success,
+    #authMessage.success {
+      color: #3a2300;
+      background: #fff500;
+      box-shadow: 0 0 18px #fff500cc;
+    }
+
+    #result.error,
+    #authMessage.error {
+      color: #fff;
+      background: #ef7e00;
+      box-shadow: 0 0 18px #ef7e00cc;
+    }
+
+    hr {
+      border: none;
+      height: 2px;
+      background: linear-gradient(90deg, #fff500 0%, #ef7e00 100%);
+      margin: 30px 0 25px;
+      border-radius: 10px;
+      max-width: 100%;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #fff500bb;
+      user-select: none;
+      margin-top: 20px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    /* Responsivní */
+    @media (max-width: 520px) {
+      main {
+        padding: 25px 20px 30px 20px;
+        max-width: 100%;
+      }
+
+      input {
+        font-size: 1rem;
+        padding: 12px 14px;
+      }
+
+      button {
+        font-size: 1.1rem;
+        padding: 14px 0;
+      }
+    }
+
+    @media (max-width: 360px) {
+      body {
+        padding: 15px 10px;
+      }
+
+      main {
+        padding: 20px 15px 25px 15px;
+        border-radius: 12px;
+      }
+
+      h1,
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>Nastavení sdílené tiskárny</h1>
+
+    <% if (message) { %>
+      <p id="authMessage" class="success">
+        <%= message %>
+      </p>
+      <% } %>
+
+        <% if (selectedPrinter && selectedPrinter.name) { %>
+          <p class="status">Aktuálně uložený název tiskárny: <strong>
+              <%= selectedPrinter.name %>
+            </strong></p>
+          <% } else { %>
+            <p class="status warning">Žádná tiskárna zatím není nastavena.</p>
+            <% } %>
+
+              <form method="POST" action="/set-printer" id="printerForm" autocomplete="off">
+                <label for="printerName">Název sdílené tiskárny (např. <em>FFTISK</em>):</label>
+                <input type="text" id="printerName" name="printerName" required
+                  value="<%= selectedPrinter ? selectedPrinter.name : '' %>" placeholder="FFTISK nebo jiný název" />
+                <button type="submit">Uložit název tiskárny</button>
+              </form>
+
+              <hr />
+
+              <h2>Testovací tisk ukázky</h2>
+              <form id="printForm" autocomplete="off">
+                <button type="submit">Tiskni ukázku</button>
+              </form>
+
+              <p id="result" aria-live="polite"></p>
+
+              <hr />
+
+              <h2>Nastavení zabezpečení tisku</h2>
+              <form id="securityForm" method="POST" action="/set-security" autocomplete="off">
+                <label>
+                  <input type="checkbox" name="printAuthEnabled" id="printAuthEnabled" <%=printAuthEnabled ? 'checked'
+                    : '' %> />
+                  Povolit základní zabezpečení (Basic Auth) na /print
+                </label>
+                <button type="submit" style="margin-top: 15px;">Uložit nastavení zabezpečení</button>
+              </form>
+
+              <hr />
+
+              <h2>Nastavení uživatele a hesla</h2>
+              <form id="authForm" method="POST" action="/settings" autocomplete="off">
+                <label for="user">Uživatelské jméno:</label>
+                <input type="text" id="user" name="user" required value="<%= authData.user %>" />
+
+                <label for="pass">Heslo:</label>
+                <div>
+                  <input type="password" id="pass" name="pass" required value="<%= authData.pass %>"
+                    autocomplete="new-password" />
+                  <button type="button" id="togglePass"
+                    
+                    aria-label="Zobrazit nebo skrýt heslo">
+                    Ukázat
+                  </button>
+                </div>
+
+                <button type="submit" style="margin-top: 15px;">Uložit uživatele a heslo</button>
+              </form>
+
+              <footer>
+                © 2025 — Print server od Jan Karlík | Ukázka QR kódu, zarovnání, ohraničení a další efekty.
+              </footer>
+  </main>
+
+  <script>
+    const printForm = document.getElementById('printForm');
+    const result = document.getElementById('result');
+
+    printForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      let text = '[demo]';
+
+      result.textContent = '⌛ Probíhá tisk...';
+      result.className = '';
+
+      try {
+        const res = await fetch('/print', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+
+        const json = await res.json();
+
+        if (res.ok && json.success) {
+          result.textContent = json.message || 'Tisk proběhl úspěšně!';
+          result.className = 'success';
+        } else {
+          result.textContent = json.error || 'Tisk selhal!';
+          result.className = 'error';
+        }
+      } catch (err) {
+        result.textContent = 'Chyba komunikace se serverem: ' + err.message;
+        result.className = 'error';
+      }
+    });
+
+    // Toggle password visibility
+    const togglePass = document.getElementById('togglePass');
+    const passInput = document.getElementById('pass');
+
+    togglePass.addEventListener('click', () => {
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        togglePass.textContent = 'Skrýt';
+      } else {
+        passInput.type = 'password';
+        togglePass.textContent = 'Ukázat';
+      }
+    });
+  </script>
+</body>
+
+</html>
