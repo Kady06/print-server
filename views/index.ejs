@@ -4,317 +4,392 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Nastavení tiskárny a testovací tisk</title>
+  <title>Print Server - Nastavení a testovací tisk</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
-
+    /* Reset */
     * {
       box-sizing: border-box;
     }
 
     body {
-      font-family: 'Roboto Mono', monospace;
-      background: linear-gradient(135deg, #ef7e00, #fff500);
-      color: #3a2300;
       margin: 0;
-      padding: 20px 15px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e0f0ff, #ffffff);
+      color: #2a2a2a;
       display: flex;
       justify-content: center;
-      align-items: center;
-      text-rendering: optimizeLegibility;
+      padding: 30px 20px;
+      min-height: 100vh;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
 
     main {
-      background: #3a2300;
-      padding: 2em;
-      border-radius: 18px;
-      box-shadow: 0 12px 30px rgba(255, 245, 0, 0.4);
-      max-width: 50%;
+      background: #fff;
+      max-width: 960px;
       width: 100%;
-      color: #fff500;
+      border-radius: 12px;
+      padding: 30px 35px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
       display: flex;
       flex-direction: column;
-      gap: 25px;
+      gap: 28px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    main:hover {
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.16);
     }
 
     h1,
     h2 {
-      text-align: center;
-      margin: 0;
+      margin: 0 0 14px 0;
       font-weight: 700;
-      letter-spacing: 1.1px;
-      text-shadow: 0 0 12px #fff500cc;
-    }
-
-    p.status {
-      background: #5e3b00cc;
-      padding: 14px 18px;
-      border-radius: 10px;
-      font-size: 1.15rem;
-      margin: 0 auto 20px;
-      max-width: 100%;
+      color: #1a1a1a;
       text-align: center;
-      color: #fff500;
-      box-shadow: inset 0 0 10px #fff500aa;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
       user-select: none;
-      font-weight: 600;
-    }
-
-    p.status.warning {
-      color: #ef7e00;
-      background: #fff0ccdd;
-      box-shadow: inset 0 0 8px #ef7e0055;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      width: 100%;
     }
 
     label {
-      font-weight: 700;
-      font-size: 1.15rem;
-      color: #fff500;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: block;
+      cursor: pointer;
+      color: #3a3a3a;
       user-select: none;
     }
 
     input[type="text"],
-    input[type="password"] {
-      padding: 14px 18px;
-      border-radius: 12px;
-      border: none;
-      font-size: 1.1rem;
-      background: #5e3b0011;
-      color: #fff500;
-      box-shadow: inset 0 0 10px #ef7e00aa;
-      transition: background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
-      font-weight: 600;
-      caret-color: #fff500;
-      letter-spacing: 0.03em;
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1.8px solid #cbd6e2;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #2a2a2a;
+      background: #fefefe;
+      box-shadow: inset 0 1px 4px #d3d9e6;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
-    input::placeholder {
-      color: #fff500cc;
-      font-style: italic;
-    }
-
-    input:focus {
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    select:focus {
       outline: none;
-      background: #7f5400cc;
-      box-shadow: 0 0 14px #fff500ee;
-      color: #fff;
+      border-color: #2f80ed;
+      box-shadow: 0 0 8px #2f80edaa;
+      background: #fff;
     }
 
     button {
-      background: #ef7e00;
-      border: none;
-      padding: 16px 0;
-      font-weight: 800;
-      font-size: 1.2rem;
-      border-radius: 14px;
       cursor: pointer;
-      color: #3a2300;
-      box-shadow: 0 10px 20px #ffb33bcc;
-      transition: background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+      background-color: #2f80ed;
+      border: none;
+      color: white;
+      padding: 14px 0;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1.1rem;
       letter-spacing: 0.05em;
+      box-shadow: 0 6px 12px rgba(47, 128, 237, 0.48);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
       user-select: none;
     }
 
     button:hover,
     button:focus {
-      background: #fff500;
-      color: #3a2300;
-      box-shadow: 0 14px 30px #fff500ee;
+      background-color: #1366d6;
+      box-shadow: 0 8px 18px rgba(19, 102, 214, 0.62);
       outline: none;
     }
 
-    #result,
-    #authMessage {
-      text-align: center;
-      font-weight: 700;
-      font-size: 1.15rem;
-      padding: 14px 18px;
-      border-radius: 14px;
-      min-height: 44px;
-      user-select: none;
-      transition: all 0.3s ease;
-      letter-spacing: 0.03em;
-      max-width: 100%;
-      margin: 0 auto;
-    }
-
-    #result.success,
-    #authMessage.success {
-      color: #3a2300;
-      background: #fff500;
-      box-shadow: 0 0 18px #fff500cc;
-    }
-
-    #result.error,
-    #authMessage.error {
-      color: #fff;
-      background: #ef7e00;
-      box-shadow: 0 0 18px #ef7e00cc;
-    }
-
-    hr {
-      border: none;
-      height: 2px;
-      background: linear-gradient(90deg, #fff500 0%, #ef7e00 100%);
-      margin: 30px 0 25px;
+    .message {
+      padding: 14px 20px;
       border-radius: 10px;
-      max-width: 100%;
+      font-weight: 700;
+      text-align: center;
+      user-select: none;
+      font-size: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .message.success {
+      background-color: #e6f4ea;
+      color: #2e7d32;
+      border: 1.5px solid #a5d6a7;
+    }
+
+    .message.error {
+      background-color: #fcebea;
+      color: #b71c1c;
+      border: 1.5px solid #ef9a9a;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    /* Radio button label styling */
+    .form-group label input[type="radio"] {
+      margin-right: 10px;
+      accent-color: #2f80ed;
+      cursor: pointer;
+      vertical-align: middle;
     }
 
     footer {
       text-align: center;
-      font-size: 0.85rem;
-      color: #fff500bb;
-      user-select: none;
+      font-size: 0.9rem;
+      color: #666;
       margin-top: 20px;
+      user-select: none;
+      font-style: italic;
+      letter-spacing: 0.02em;
+    }
+
+    #result {
+      margin-top: 12px;
+      font-weight: 700;
+      text-align: center;
+      min-height: 30px;
+      user-select: none;
+      font-size: 1rem;
+      color: #2f80ed;
+      transition: color 0.3s ease;
+    }
+
+    /* Password toggle button */
+    #togglePass {
+      background-color: #eeeeee;
+      border: 1.5px solid #ccc;
+      color: #555;
       font-weight: 600;
-      letter-spacing: 0.05em;
+      border-radius: 8px;
+      padding: 7px 14px;
+      user-select: none;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
 
-    /* Responsivní */
-    @media (max-width: 520px) {
-      main {
-        padding: 25px 20px 30px 20px;
-        max-width: 100%;
-      }
-
-      input {
-        font-size: 1rem;
-        padding: 12px 14px;
-      }
-
-      button {
-        font-size: 1.1rem;
-        padding: 14px 0;
-      }
-    }
-
-    @media (max-width: 360px) {
-      body {
-        padding: 15px 10px;
-      }
-
-      main {
-        padding: 20px 15px 25px 15px;
-        border-radius: 12px;
-      }
-
-      h1,
-      h2 {
-        font-size: 1.5rem;
-      }
+    #togglePass:hover,
+    #togglePass:focus {
+      background-color: #2f80ed;
+      color: white;
+      border-color: #2f80ed;
+      outline: none;
     }
   </style>
 </head>
 
 <body>
   <main>
-    <h1>Nastavení sdílené tiskárny</h1>
+    <h1>Print Server - Nastavení tiskárny</h1>
 
     <% if (message) { %>
-      <p id="authMessage" class="success">
+      <div class="message success" role="alert">
         <%= message %>
-      </p>
+      </div>
       <% } %>
 
-        <% if (selectedPrinter && selectedPrinter.name) { %>
-          <p class="status">Aktuálně uložený název tiskárny: <strong>
-              <%= selectedPrinter.name %>
-            </strong></p>
-          <% } else { %>
-            <p class="status warning">Žádná tiskárna zatím není nastavena.</p>
-            <% } %>
+        <form method="POST" action="/set-printer" autocomplete="off">
+          <fieldset>
+            <legend>
+              <h2>Výběr tiskárny</h2>
+            </legend>
 
-              <form method="POST" action="/set-printer" id="printerForm" autocomplete="off">
-                <label for="printerName">Název sdílené tiskárny (např. <em>FFTISK</em>):</label>
-                <input type="text" id="printerName" name="printerName" required
-                  value="<%= selectedPrinter ? selectedPrinter.name : '' %>" placeholder="FFTISK nebo jiný název" />
-                <button type="submit">Uložit název tiskárny</button>
-              </form>
+            <div class="form-group">
+              <label><input type="radio" name="printerType" value="shared" <%=(!selectedPrinter ||
+                  selectedPrinter.type==='shared' ) ? 'checked' : '' %> /> Sdílená tiskárna</label>
+              <input type="text" name="sharedPrinterName" placeholder="Název sdílené tiskárny"
+                value="<%= selectedPrinter && selectedPrinter.type === 'shared' ? selectedPrinter.name : '' %>" />
+            </div>
 
-              <hr />
+            <div class="form-group">
+              <label><input type="radio" name="printerType" value="ip" <%=selectedPrinter && selectedPrinter.type==='ip'
+                  ? 'checked' : '' %> /> IP tiskárna (TCP)</label>
+              <input type="text" name="ipAddress" placeholder="tcp://192.168.0.123"
+                value="<%= selectedPrinter && selectedPrinter.type === 'ip' ? selectedPrinter.interface : '' %>"
+                <%=selectedPrinter && selectedPrinter.type==='ip' ? '' : 'disabled' %>
+              />
+            </div>
 
-              <h2>Testovací tisk ukázky</h2>
-              <form id="printForm" autocomplete="off">
-                <button type="submit">Tiskni ukázku</button>
-              </form>
+            <div class="form-group">
+              <label><input type="radio" name="printerType" value="usb" <%=selectedPrinter &&
+                  selectedPrinter.type==='usb' ? 'checked' : '' %> /> USB tiskárna</label>
+              <select name="usbDevice" <%=selectedPrinter && selectedPrinter.type==='usb' ? '' : 'disabled' %>>
+                <option value="">Vyber USB zařízení</option>
+                <% usbPrinters.forEach(dev=> { %>
+                  <option value="<%= dev.device %>" <%=selectedPrinter && selectedPrinter.type==='usb' &&
+                    selectedPrinter.device===dev.device ? 'selected' : '' %>><%= dev.label %>
+                  </option>
+                  <% }) %>
+              </select>
+            </div>
 
-              <p id="result" aria-live="polite"></p>
+            <div class="form-group">
+              <label><input type="radio" name="printerType" value="system" <%=selectedPrinter &&
+                  selectedPrinter.type==='system' ? 'checked' : '' %> /> Systémová tiskárna</label>
+              <select name="systemPrinterName" <%=selectedPrinter && selectedPrinter.type==='system' ? '' : 'disabled'
+                %>>
+                <option value="">Vyber tiskárnu ze systému</option>
+                <% systemPrinters.forEach(name=> { %>
+                  <option value="<%= name %>" <%=selectedPrinter && selectedPrinter.type==='system' &&
+                    selectedPrinter.name===name ? 'selected' : '' %>><%= name %>
+                  </option>
+                  <% }) %>
+              </select>
+            </div>
 
-              <hr />
+          </fieldset>
 
-              <h2>Nastavení zabezpečení tisku</h2>
-              <form id="securityForm" method="POST" action="/set-security" autocomplete="off">
-                <label>
-                  <input type="checkbox" name="printAuthEnabled" id="printAuthEnabled" <%=printAuthEnabled ? 'checked'
-                    : '' %> />
-                  Povolit základní zabezpečení (Basic Auth) na /print
-                </label>
-                <button type="submit" style="margin-top: 15px;">Uložit nastavení zabezpečení</button>
-              </form>
+          <button type="submit">Uložit tiskárnu</button>
+        </form>
 
-              <hr />
 
+        <hr />
+
+        <section>
+          <h2>Testovací tisk</h2>
+          <button id="btnPrintSample">Tiskni ukázku</button>
+          <div id="result" aria-live="polite"></div>
+        </section>
+
+        <hr />
+
+        <form method="POST" action="/set-security" autocomplete="off">
+          <fieldset>
+            <legend>
+              <h2>Zabezpečení tisku</h2>
+            </legend>
+            <label>
+              <input type="checkbox" name="printAuthEnabled" id="printAuthEnabled" <%=printAuthEnabled ? 'checked' : ''
+                %> />
+              Povolit základní zabezpečení (Basic Auth) na /print
+            </label>
+            <button type="submit">Uložit nastavení zabezpečení</button>
+          </fieldset>
+        </form>
+
+        <hr />
+
+        <form id="authForm" method="POST" action="/settings" autocomplete="off">
+          <fieldset>
+            <legend>
               <h2>Nastavení uživatele a hesla</h2>
-              <form id="authForm" method="POST" action="/settings" autocomplete="off">
-                <label for="user">Uživatelské jméno:</label>
-                <input type="text" id="user" name="user" required value="<%= authData.user %>" />
+            </legend>
 
-                <label for="pass">Heslo:</label>
-                <div>
-                  <input type="password" id="pass" name="pass" required value="<%= authData.pass %>"
-                    autocomplete="new-password" />
-                  <button type="button" id="togglePass"
-                    
-                    aria-label="Zobrazit nebo skrýt heslo">
-                    Ukázat
-                  </button>
-                </div>
+            <label for="user">Uživatelské jméno:</label>
+            <input type="text" id="user" name="user" required value="<%= authData.user %>" />
 
-                <button type="submit" style="margin-top: 15px;">Uložit uživatele a heslo</button>
-              </form>
+            <label for="pass">Heslo:</label>
+            <div style="display:flex; gap: 10px; align-items: center;">
+              <input type="password" id="pass" name="pass" required value="<%= authData.pass %>"
+                autocomplete="new-password" />
+              <button type="button" id="togglePass" aria-label="Zobrazit nebo skrýt heslo">Ukázat</button>
+            </div>
 
-              <footer>
-                © 2025 — Print server od Jan Karlík | Ukázka QR kódu, zarovnání, ohraničení a další efekty.
-              </footer>
+            <button type="submit">Uložit uživatele a heslo</button>
+          </fieldset>
+        </form>
+
+        <footer>
+          © 2025 — Print server od Jan Karlík
+        </footer>
   </main>
 
   <script>
-    const printForm = document.getElementById('printForm');
+    const btnPrintSample = document.getElementById('btnPrintSample');
     const result = document.getElementById('result');
 
-    printForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    document.querySelectorAll('input[name="printerType"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        const type = radio.value;
 
-      let text = '[demo]';
+        document.querySelector('input[name="sharedPrinterName"]').disabled = type !== 'shared';
+        document.querySelector('input[name="ipAddress"]').disabled = type !== 'ip';
+        document.querySelector('select[name="usbDevice"]').disabled = type !== 'usb';
+        document.querySelector('select[name="systemPrinterName"]').disabled = type !== 'system';
+      });
 
+      // Spustit na start, aby se zobrazilo správné aktivní pole
+      radio.dispatchEvent(new Event('change'));
+    });
+
+
+
+    btnPrintSample.addEventListener('click', async () => {
       result.textContent = '⌛ Probíhá tisk...';
       result.className = '';
-
       try {
+        const data = [
+          { type: "align", content: "Center" },
+          { type: "size", content: "1.1" },
+          { type: "text", content: "Kavárna s.r.o." },
+          { type: "newline" },
+
+          { type: "align", content: "Left" },
+          { type: "size", content: "1.0" },
+          { type: "line" },
+          { type: "text", content: "Káva Espresso" },
+          { type: "align", content: "Right" },
+          { type: "text", content: "50 Kč" },
+
+          { type: "align", content: "Left" },
+          { type: "text", content: "Káva Latte" },
+          { type: "align", content: "Right" },
+          { type: "text", content: "60 Kč" },
+
+          { type: "align", content: "Left" },
+          { type: "text", content: "Čaj černý" },
+          { type: "align", content: "Right" },
+          { type: "text", content: "40 Kč" },
+
+          { type: "line" },
+
+          { type: "size", content: "1.1" },
+          { type: "align", content: "Left" },
+          { type: "bold", content: true },
+          { type: "text", content: "CELKEM" },
+          { type: "align", content: "Right" },
+          { type: "text", content: "150 Kč" },
+          { type: "bold", content: false },
+
+          { type: "newline" },
+
+          { type: "align", content: "Center" },
+          { type: "qr", content: "https://github.com/Kady06/print-server" },
+
+          { type: "newline" },
+
+          { type: "text", content: "Děkujeme za návštěvu!" },
+          { type: "newline" },
+
+          { type: "size", content: "1.0" },
+          { type: "align", content: "Center" },
+          { type: "underline", content: true },
+          { type: "text", content: "GitHub PrintServer" },
+          { type: "underline", content: false },
+
+          { type: "cut" }
+        ];
+
         const res = await fetch('/print', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text }),
+          body: JSON.stringify({ data }),
         });
-
         const json = await res.json();
-
         if (res.ok && json.success) {
-          result.textContent = json.message || 'Tisk proběhl úspěšně!';
+          result.textContent = '✅ Tisk proběhl úspěšně!';
           result.className = 'success';
         } else {
-          result.textContent = json.error || 'Tisk selhal!';
+          result.textContent = json.error || '❌ Tisk selhal!';
           result.className = 'error';
         }
       } catch (err) {
@@ -326,7 +401,6 @@
     // Toggle password visibility
     const togglePass = document.getElementById('togglePass');
     const passInput = document.getElementById('pass');
-
     togglePass.addEventListener('click', () => {
       if (passInput.type === 'password') {
         passInput.type = 'text';
