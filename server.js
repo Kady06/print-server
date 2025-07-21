@@ -42,7 +42,16 @@ try {
   fs.writeFileSync(SECURITY_FILE, JSON.stringify({ printAuthEnabled: true }, null, 2));
 }
 
-app.use(cors());
+const corsOptions = {
+  origin: '*',               // povolit všechny domény
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'], // povolit i Authorization header
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+
 app.use(session({
   secret: 'QJ6wN6AbePUGl1IPsELCbRL1xZOm3Asq',
   resave: false,
