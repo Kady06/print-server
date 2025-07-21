@@ -325,13 +325,23 @@ app.post('/print-raw', printAuthEnabled ? auth : (req, res, next) => next(), asy
   if (!selectedPrinter) return res.status(400).json({ error: 'No printer selected' });
 
   try {
-    const tmpFile = path.join(os.tmpdir(), `printraw_${Date.now()}.txt`);
-    fs.writeFileSync(tmpFile, text, 'utf8');
+    const textBuffer = Buffer.from(text, 'utf8');
+
+    // Přidáme posun papíru a cut
+    const feedAndCut = Buffer.from([0x1b, 0x64, 0x05, 0x1d, 0x56, 0x00]);
+
+    const fullBuffer = Buffer.concat([textBuffer, feedAndCut]);
+
+    const tmpFile = path.join(os.tmpdir(), `printraw_${Date.now()}.bin`);
+    fs.writeFileSync(tmpFile, fullBuffer);
+
     sendToPrinter(tmpFile, res);
   } catch (err) {
     res.status(500).json({ error: 'Raw text processing error', detail: err.message });
   }
 });
+
+
 
 app.post('/print', printAuthEnabled ? auth : (req, res, next) => next(), async (req, res) => {
   const { data } = req.body;
