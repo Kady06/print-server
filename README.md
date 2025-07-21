@@ -1,67 +1,133 @@
-# Print Server API
 
-Tento tiskový server umožňuje ovládat termální tiskárnu přes HTTP API. Podporuje různé typy tiskáren (USB, systémové, sdílené, IP) a základní tiskové příkazy v ESC/POS formátu.
+# API Dokumentace tiskových endpointů
 
----
-
-## Obsah
-
-- [Autentizace](#autentizace)
-- [Nastavení tiskárny](#nastavení-tiskárny)
-- [Bezpečnost](#bezpečnost)
-- [API Endpoints](#api-endpoints)
-  - [`POST /print`](#post-print)
-  - [`POST /print-buffer`](#post-print-buffer)
-  - [`POST /print-raw`](#post-print-raw)
-- [Příklady použití](#příklady-použití)
+Tady najdeš stručný přehled tří hlavních endpointů pro tisk v Print Serveru.
 
 ---
 
-## Autentizace
+## POST `/print`
 
-Ve výchozím nastavení je aktivní HTTP Basic Authentication. Přihlašovací údaje jsou ve formátu:
+Tiskne posloupnost příkazů jako JSON pole, které tvoří obsah a formát výtisku.
 
-- Uživatelské jméno: `admin` (nebo dle `.env` / `auth.json`)
-- Heslo: `admin` (nebo dle `.env` / `auth.json`)
+### Request
 
-Při požadavcích na chráněné endpointy je třeba tyto údaje posílat v hlavičce `Authorization`.
-
----
-
-## Nastavení tiskárny
-
-Vyber si typ tiskárny a její název nebo zařízení pomocí endpointu `/set-printer` (musíš být autentizovaný).
-
-Možné typy:
-
-- `shared` – sdílená síťová tiskárna (Windows)
-- `usb` – USB zařízení (např. `/dev/usb/lp0`)
-- `system` – systémová tiskárna (např. CUPS na Linuxu)
-- `ip` – IP tiskárna (adresa ve formátu `tcp://192.168.0.123`)
-
----
-
-## Bezpečnost
-
-Tiskové API je chráněné Basic Auth, ale ochranu můžeš vypnout nebo zapnout přes `/set-security`.
-
----
-
-## API Endpoints
-
-### POST `/print`
-
-Přijímá JSON pole tiskových příkazů v pořadí, které se mají vykreslit.
+- Content-Type: `application/json`
+- Body:
 
 ```json
 {
   "data": [
-    { "type": "text", "content": "Ahoj světe!" },
+    { "type": "text", "content": "Váš text" },
     { "type": "bold", "content": true },
-    { "type": "text", "content": "Tučně" },
+    { "type": "text", "content": "Tučný text" },
     { "type": "bold", "content": false },
     { "type": "line" },
     { "type": "qr", "content": "https://example.com" },
     { "type": "cut" }
   ]
 }
+```
+
+### Podporované typy příkazů (`type`):
+
+| Typ        | Popis                                          | Content                          |
+|------------|------------------------------------------------|--------------------------------|
+| `text`     | Vytiskne text                                  | String s textem                |
+| `line`     | Vytiskne čáru (----)                           | -                              |
+| `qr`       | Vytiskne QR kód                                | Text pro QR kód                |
+| `size`     | Nastaví velikost textu (šířka.výška, max 7)   | String např. `"2.2"`           |
+| `align`    | Zarovnání textu (`left`, `center`, `right`)   | String s hodnotou              |
+| `bold`     | Zapne/vypne tučný tisk                         | Boolean (true/false)           |
+| `underline`| Zapne/vypne podtržení                          | Boolean (true/false)           |
+| `cut`      | Ustřihnutí papíru                              | -                             |
+| `newline`  | Nový řádek                                    | -                             |
+
+### Response
+
+- `200 OK` + `{ "success": true }`
+- `400 Bad Request` pokud jsou data špatně nebo tiskárna není vybrána
+- `401 Unauthorized` pokud chybí nebo je špatná autentizace (pokud je povolena)
+
+---
+
+## POST `/print-buffer`
+
+Tiskne přímo binární tiskový buffer zakódovaný base64.
+
+### Request
+
+- Content-Type: `application/json`
+- Body:
+
+```json
+{
+  "bufferBase64": "<base64-encoded-buffer>"
+}
+```
+
+### Response
+
+- `200 OK` + `{ "success": true }`
+- `400 Bad Request` pokud chybí `bufferBase64` nebo tiskárna není vybrána
+- `401 Unauthorized` pokud chybí nebo je špatná autentizace (pokud je povolena)
+
+---
+
+## POST `/print-raw`
+
+Tiskne surový text (např. ESC/POS příkazy nebo prostý text). Po tisku automaticky posílá příkaz pro ustřižení papíru.
+
+### Request
+
+- Content-Type: `application/json`
+- Body:
+
+```json
+{
+  "text": "Toto je surový tiskový text\ns novým řádkem."
+}
+```
+
+### Response
+
+- `200 OK` + `{ "success": true }`
+- `400 Bad Request` pokud chybí `text` nebo tiskárna není vybrána
+- `401 Unauthorized` pokud chybí nebo je špatná autentizace (pokud je povolena)
+
+---
+
+## Autentizace
+
+Pokud je tisková bezpečnost zapnutá, všechny endpointy vyžadují HTTP Basic Auth.
+
+---
+
+## Příklad použití s `curl`
+
+```bash
+curl -u admin:admin -X POST http://localhost:3000/print-raw \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Ahoj, tady tisknu surový text a hned střih."}'
+```
+
+```bash
+curl -u admin:admin -X POST http://localhost:3000/print \
+  -H "Content-Type: application/json" \
+  -d '{
+    "data": [
+      {"type":"text","content":"Nadpis"},
+      {"type":"bold","content":true},
+      {"type":"text","content":"Tučný text"},
+      {"type":"bold","content":false},
+      {"type":"line"},
+      {"type":"qr","content":"https://github.com"},
+      {"type":"cut"}
+    ]
+  }'
+```
+
+```bash
+curl -u admin:admin -X POST http://localhost:3000/print-buffer \
+  -H "Content-Type: application/json" \
+  -d '{"bufferBase64":"<base64_data>"}'
+```
