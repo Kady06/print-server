@@ -253,7 +253,7 @@ async function sendToPrinter(bufferPath, res) {
       });
 
       console.log(`📤 Sending data to IP printer: ${selectedPrinter.interface}`);
-      
+
 
       // Nastav buffer do tiskárny a pošli ho
       await printer.setBuffer(buffer);
@@ -379,21 +379,40 @@ app.post('/print', printAuthEnabled ? auth : (req, res, next) => next(), async (
             printer.println('[Chybí QR obsah]');
           }
           break;
+        case 'barcode': {
+          if (typeof item.content === 'string' && item.content.trim() !== '') {
+            const width = typeof item.width === 'number' ? item.width : 2;
+            const height = typeof item.height === 'number' ? item.height : 60;
+
+            try {
+              console.log(`📦 Tisknu CODE128: "${item.content}"`);
+              printer.code128(item.content, { width, height });
+            } catch (e) {
+              console.error('❌ Chyba při tisku CODE128:', e);
+              printer.println(`[Chyba při tisku CODE128: ${e.message}]`);
+            }
+          } else {
+            printer.println('[Chybí obsah pro čárový kód]');
+          }
+          break;
+        }
         case 'size': {
           if (typeof item.content === 'string') {
-            const parts = item.content.split('.').map(n => parseInt(n, 10));
-            if (parts.length === 2 && parts.every(n => !isNaN(n))) {
-              const [w, h] = parts.map(n => Math.min(Math.max(n, 0), 7));
+            const match = item.content.match(/^(\d+)\.(\d+)$/);
+            if (match) {
+              const w = Math.min(Math.max(parseInt(match[1], 10), 0), 7);
+              const h = Math.min(Math.max(parseInt(match[2], 10), 0), 7);
               printer.setTextSize(w, h);
               console.log(`Nastavuji velikost textu: ${w}x${h}`);
             } else {
-              printer.println('[Chybný formát size]');
+              printer.println('[Chybný formát size – použij např. "2.3"]');
             }
           } else {
             printer.println('[Nevalidní size]');
           }
           break;
         }
+
 
 
         case 'align': {

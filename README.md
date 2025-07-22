@@ -35,12 +35,13 @@ Tiskne posloupnost příkazů jako JSON pole, které tvoří obsah a formát vý
 | `text`     | Vytiskne text                                  | String s textem                |
 | `line`     | Vytiskne čáru (----)                           | -                              |
 | `qr`       | Vytiskne QR kód                                | Text pro QR kód                |
+| `barcode`  | Vytiskne čárový kód                            | Číselný kód (code128)          |
 | `size`     | Nastaví velikost textu (šířka.výška, max 7)   | String např. `"2.2"`           |
 | `align`    | Zarovnání textu (`left`, `center`, `right`)   | String s hodnotou              |
 | `bold`     | Zapne/vypne tučný tisk                         | Boolean (true/false)           |
 | `underline`| Zapne/vypne podtržení                          | Boolean (true/false)           |
 | `cut`      | Ustřihnutí papíru                              | -                             |
-| `newline`  | Nový řádek                                    | -                             |
+| `newline`  | Prázdný řádek                                   | -                             |
 
 ### Response
 
