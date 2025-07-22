@@ -233,18 +233,24 @@
             </div>
 
             <div class="form-group">
-              <label><input type="radio" name="printerType" value="system" <%=selectedPrinter &&
-                  selectedPrinter.type==='system' ? 'checked' : '' %> /> Systémová tiskárna</label>
+              <label>
+                <input type="radio" name="printerType" value="system" <%=selectedPrinter &&
+                  selectedPrinter.type==='system' ? 'checked' : '' %> />
+                Systémová tiskárna
+              </label>
               <select name="systemPrinterName" <%=selectedPrinter && selectedPrinter.type==='system' ? '' : 'disabled'
                 %>>
                 <option value="">Vyber tiskárnu ze systému</option>
-                <% systemPrinters.forEach(name=> { %>
-                  <option value="<%= name %>" <%=selectedPrinter && selectedPrinter.type==='system' &&
-                    selectedPrinter.name===name ? 'selected' : '' %>><%= name %>
+                <% systemPrinters.forEach(printer=> { %>
+                  <option value="<%= printer.device %>" <%=selectedPrinter && selectedPrinter.type==='system' &&
+                    selectedPrinter.name===printer.device ? 'selected' : '' %>
+                    >
+                    <%= printer.label %>
                   </option>
                   <% }) %>
               </select>
             </div>
+
 
           </fieldset>
 

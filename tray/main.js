@@ -1,13 +1,19 @@
-const { app, Tray, Menu, shell, dialog } = require('electron');
+const { app, Tray, Menu, shell } = require('electron');
 const path = require('path');
-const { spawn, exec } = require('child_process');
+const { spawn } = require('child_process');
+const kill = require('tree-kill');
 const net = require('net');
+const fs = require('fs');
 
 let tray = null;
 let serverProcess = null;
 const serverPort = 60420;
-
 const serverPath = path.join(__dirname, '../app/server.js');
+
+console.log('__dirname:', __dirname);
+console.log('serverPath:', path.join(__dirname, '../app/server.js'));
+
+
 
 function isServerRunning(callback) {
   const client = net.createConnection({ port: serverPort }, () => {
@@ -19,7 +25,13 @@ function isServerRunning(callback) {
 
 function startServer() {
   if (serverProcess) return;
-  serverProcess = spawn('node', [serverPath], {
+
+  if (!fs.existsSync(serverPath)) {
+    console.error('Server script nenalezen:', serverPath);
+    return;
+  }
+
+  serverProcess = spawn(process.execPath, [serverPath], {
     cwd: path.dirname(serverPath),
     detached: true,
     stdio: 'ignore',
@@ -28,18 +40,32 @@ function startServer() {
 }
 
 function stopServer() {
-  exec(`pkill -f "${serverPath}"`);
-  serverProcess = null;
+  if (serverProcess && serverProcess.pid) {
+    kill(serverProcess.pid, 'SIGTERM', (err) => {
+      if (err) console.error('Chyba při ukončení procesu:', err);
+    });
+    serverProcess = null;
+  } else {
+    // Fallback: pokud server běží mimo náš proces
+    if (process.platform === 'win32') {
+      // Pozor: zabije všechny node procesy – použij jen v nouzi
+      require('child_process').exec('taskkill /F /IM node.exe');
+    } else {
+      require('child_process').exec(`pkill -f "${serverPath}"`);
+    }
+  }
 }
 
 function openTerminal() {
-  const terminal = process.platform === 'linux'
-    ? 'x-terminal-emulator'
-    : process.platform === 'darwin'
-    ? 'open -a Terminal'
-    : 'start cmd';
-
-  exec(terminal);
+  if (process.platform === 'win32') {
+    require('child_process').exec('start cmd', { shell: 'cmd.exe' });
+  } else if (process.platform === 'darwin') {
+    require('child_process').exec('open -a Terminal');
+  } else {
+    require('child_process').exec(
+      'x-terminal-emulator || gnome-terminal || konsole || xfce4-terminal || lxterminal || xterm'
+    );
+  }
 }
 
 function buildMenu(isRunning) {
@@ -59,8 +85,10 @@ function buildMenu(isRunning) {
       label: '🔄 Restartovat server',
       click: () => {
         stopServer();
-        setTimeout(startServer, 1000);
-        setTimeout(updateMenu, 2000);
+        setTimeout(() => {
+          startServer();
+          setTimeout(updateMenu, 1000);
+        }, 1000);
       },
     },
     {
@@ -90,5 +118,9 @@ app.whenReady().then(() => {
   tray = new Tray(path.join(__dirname, 'icon.png'));
   startServer();
   updateMenu();
-  setInterval(updateMenu, 3000); // obnovovat stav každé 3s
+  setInterval(updateMenu, 3000);
+});
+
+app.on('before-quit', () => {
+  stopServer();
 });

@@ -102,37 +102,41 @@ function listSystemPrinters() {
         const printers = lines.map(line => line.trim()).filter(Boolean).map(line => {
           const parts = line.split(',');
           return {
-            device: parts[2],
-            label: parts[1],
+            device: parts[2], // název portu (pro tisk)
+            label: parts[1],  // název tiskárny (pro UI)
           };
         });
+        console.log(printers);
+
+
         resolve(printers);
       });
     } else {
       exec('lpstat -p -d', (err, stdout) => {
         if (err) return resolve([]);
-        const printers = stdout.split('\n').filter(line => line.startsWith('printer')).map(line => {
-          const parts = line.split(' ');
-          return {
-            device: parts[1],
-            label: line,
-          };
-        });
+        const printers = stdout.split('\n')
+          .filter(line => line.startsWith('printer '))
+          .map(line => {
+            // První slovo za 'printer' je název tiskárny (pro tisk)
+            const device = line.split(' ')[1];
+            return {
+              device: device,    // Název tiskárny pro tisk
+              label: line.trim(), // Celý řádek pro UI (popis)
+            };
+          });
         resolve(printers);
       });
     }
   });
 }
 
+
+
 function listUSBPrinters() {
   return new Promise((resolve) => {
     if (os.platform() === 'win32') {
-      resolve(
-        Array.from({ length: 3 }, (_, i) => ({
-          device: `LPT${i + 1}`,
-          label: `Paralelní port LPT${i + 1}`,
-        }))
-      );
+      // Nepodporujeme USB tiskárny přes LPT, necháme prázdný seznam
+      resolve([]);
     } else {
       const usbPath = '/dev/usb';
       if (!fs.existsSync(usbPath)) return resolve([]);
@@ -147,6 +151,7 @@ function listUSBPrinters() {
     }
   });
 }
+
 
 
 
@@ -242,47 +247,55 @@ async function sendToPrinter(bufferPath, res) {
 
   try {
     if (selectedPrinter.type === 'ip') {
-      // Přečti buffer
       const buffer = fs.readFileSync(bufferPath);
 
       const printer = new ThermalPrinter({
-        type: PrinterTypes.EPSON, // nebo STARPřizpůsob si podle potřeby
-        interface: selectedPrinter.interface, // např. "192.168.0.123"
-        //characterSet: CharacterSet.PC852_LATIN2,
+        type: PrinterTypes.EPSON,
+        interface: selectedPrinter.interface,
         encoding: 'UTF-8',
       });
 
       console.log(`📤 Sending data to IP printer: ${selectedPrinter.interface}`);
 
-
-      // Nastav buffer do tiskárny a pošli ho
       await printer.setBuffer(buffer);
       await printer.execute();
 
       fs.unlinkSync(bufferPath);
       return res.json({ success: true });
     } else {
-      // Pro ostatní typy tiskáren stále původní exec
       const isWin = os.platform() === 'win32';
       let cmd;
 
       switch (selectedPrinter.type) {
         case 'shared':
         case 'system':
-          cmd = isWin
-            ? `copy /B "${bufferPath}" "\\\\localhost\\${selectedPrinter.name}"`
-            : `lp -d "${selectedPrinter.name}" "${bufferPath}"`;
+          if (isWin) {
+            // Na Windows musí být název tiskárny správný, ne port
+            if (!selectedPrinter.name || selectedPrinter.name.toUpperCase().startsWith('USB')) {
+              fs.unlinkSync(bufferPath);
+              return res.status(400).json({
+                error: 'Invalid printer name for Windows system/shared printer. Use the exact printer name from the system.',
+              });
+            }
+            cmd = `copy /B "${bufferPath}" "\\\\localhost\\${selectedPrinter.name}"`;
+          } else {
+            cmd = `lp -d "${selectedPrinter.name}" "${bufferPath}"`;
+          }
           break;
 
         case 'usb':
           if (isWin) {
-            cmd = `copy /B "${bufferPath}" "${selectedPrinter.device}"`;
+            fs.unlinkSync(bufferPath);
+            return res.status(400).json({
+              error: 'USB printer printing is not supported on Windows via this method. Use system printer instead.',
+            });
           } else {
             cmd = `cat "${bufferPath}" > "${selectedPrinter.device}"`;
           }
           break;
 
         default:
+          fs.unlinkSync(bufferPath);
           return res.status(400).json({ error: 'Unknown printer type' });
       }
 
@@ -301,6 +314,7 @@ async function sendToPrinter(bufferPath, res) {
     res.status(500).json({ error: 'Print failed', detail: err.message });
   }
 }
+
 
 
 // POST /print-buffer - print base64 buffer from other node-thermal-printer apps
@@ -384,7 +398,7 @@ app.post('/print', printAuthEnabled ? auth : (req, res, next) => next(), async (
             const height = typeof item.height === 'number' ? item.height : 60;
 
             try {
-              
+
               printer.code128(item.content, { width, height });
             } catch (e) {
               console.error('❌ Chyba při tisku CODE128:', e);
