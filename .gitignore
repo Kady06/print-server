@@ -4,3 +4,4 @@ security.json
 selectedPrinter.json
 node_modules/
 package-lock.json
+start-tray.sh

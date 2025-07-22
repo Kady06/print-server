@@ -1,24 +1,11 @@
 {
-  "name": "kady-print-server",
+  "name": "print-server-app",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "tray/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "basic-auth": "^2.0.1",
-    "body-parser": "^2.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.0.1",
-    "ejs": "^3.1.10",
-    "express": "^5.1.0",
-    "express-session": "^1.18.1",
-    "node-thermal-printer": "^4.5.0",
-    "printer": "^0.4.0",
-    "usb": "^2.16.0"
+    "electron": "^29.0.0"
   }
 }
