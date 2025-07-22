@@ -12,7 +12,7 @@ const { printer: ThermalPrinter, types: PrinterTypes, CharacterSet } = require('
 const usb = require('usb');
 
 const app = express();
-const PORT = 3000;
+const PORT = 60420;
 
 const STORAGE_FILE = path.resolve(__dirname, 'selectedPrinter.json');
 const AUTH_FILE = path.resolve(__dirname, 'auth.json');
@@ -460,6 +460,6 @@ app.post('/print', printAuthEnabled ? auth : (req, res, next) => next(), async (
 
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`🖨️ Print server running at http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🖨️ Print server running at http://0.0.0.0:${PORT}`);
 });

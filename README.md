@@ -23,6 +23,11 @@ Tiskne posloupnost příkazů jako JSON pole, které tvoří obsah a formát vý
     { "type": "bold", "content": false },
     { "type": "line" },
     { "type": "qr", "content": "https://example.com" },
+    { "type": "barcode", "content": "123456789012" },
+    { "type": "size", "content": "2.2" },
+    { "type": "align", "content": "center" },
+    { "type": "underline", "content": true },
+    { "type": "newline" },
     { "type": "cut" }
   ]
 }
