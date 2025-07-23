@@ -3,7 +3,7 @@
 
 Tady najdeš stručný přehled tří hlavních endpointů pro tisk v Print Serveru.
 
-## Adresa a prostý
+## Adresa a port
 Tiskový server běží na adrese `http://localhost:60420`.
 
 ---
