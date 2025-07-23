@@ -3,6 +3,9 @@
 
 Tady najdeš stručný přehled tří hlavních endpointů pro tisk v Print Serveru.
 
+## Adresa a prostý
+Tiskový server běží na adrese `http://localhost:60420`.
+
 ---
 
 ## POST `/print`
@@ -111,13 +114,13 @@ Pokud je tisková bezpečnost zapnutá, všechny endpointy vyžadují HTTP Basic
 ## Příklad použití s `curl`
 
 ```bash
-curl -u admin:admin -X POST http://localhost:3000/print-raw \
+curl -u admin:admin -X POST http://localhost:60420/print-raw \
   -H "Content-Type: application/json" \
   -d '{"text":"Ahoj, tady tisknu surový text a hned střih."}'
 ```
 
 ```bash
-curl -u admin:admin -X POST http://localhost:3000/print \
+curl -u admin:admin -X POST http://localhost:60420/print \
   -H "Content-Type: application/json" \
   -d '{
     "data": [
@@ -133,7 +136,7 @@ curl -u admin:admin -X POST http://localhost:3000/print \
 ```
 
 ```bash
-curl -u admin:admin -X POST http://localhost:3000/print-buffer \
+curl -u admin:admin -X POST http://localhost:60420/print-buffer \
   -H "Content-Type: application/json" \
   -d '{"bufferBase64":"<base64_data>"}'
 ```
