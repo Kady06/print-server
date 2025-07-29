@@ -86,8 +86,11 @@ Podrobné informace o použití API, podpoře formátování textu a další tec
 
 [app/README.md](https://github.com/Kady06/print-server/tree/main/app/README.md)
 
-
 ---
+
+## Ukázka odesílání z jiného serveru
+
+[example.html](https://github.com/Kady06/print-server/blob/main/example.html)
 
 ## 🖨️ Podporované tiskárny
 
