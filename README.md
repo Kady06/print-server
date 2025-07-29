@@ -124,6 +124,7 @@ GitHub: [@kady06](https://github.com/kady06)
 
 👉 Otevřete nové [issue](https://github.com/kady06/print-server/issues)  
 👉 Nebo mě kontaktujte napřímo přes GitHub
+👉 Nebo na email info@jankarlik.cz
 
 ---
 
