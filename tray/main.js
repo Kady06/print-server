@@ -10,10 +10,6 @@ let serverProcess = null;
 const serverPort = 60420;
 const serverPath = path.join(__dirname, '../app/server.js');
 
-console.log('__dirname:', __dirname);
-console.log('serverPath:', path.join(__dirname, '../app/server.js'));
-
-
 
 function isServerRunning(callback) {
   const client = net.createConnection({ port: serverPort }, () => {
