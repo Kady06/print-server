@@ -83,9 +83,9 @@ Print Server obsahuje jednoduché a přehledné webové UI:
 ## 📂 Dokumentace
 
 Podrobné informace o použití API, podpoře formátování textu a další technické detaily najdete v souboru:  
-```
+
 [app/README.md](https://github.com/Kady06/print-server/tree/main/app/README.md)
-```
+
 
 ---
 
