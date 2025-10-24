@@ -22,6 +22,7 @@ cd print-server
 Spusťte instalační skript:
 ```bash
 ./linux.sh
+sudo usermod -aG lp $USER
 ```
 
 #### 🪟 Windows  
